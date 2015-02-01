@@ -17,6 +17,7 @@ public class Client {
 		try {
 			System.out.println("Connecting to the server");
 			socket = new Socket(host, port);
+			System.out.println("Connected " + socket);
 			reader = new BufferedReader(new InputStreamReader(System.in));
 			streamOut = new DataOutputStream(socket.getOutputStream());
 		} catch (UnknownHostException e) {
