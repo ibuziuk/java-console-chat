@@ -1,4 +1,4 @@
-package org.exadel.simple.chat.client;
+package org.exadel.simple.chat;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -8,7 +8,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class Client {
-	private static final String QUIT = "quit";
 	private Socket socket;
 	BufferedReader reader;
 	DataOutputStream streamOut;
@@ -26,7 +25,7 @@ public class Client {
 			System.out.println("Unexpected exception: " + e.getMessage());
 		}
 		String line = "";
-		while (!line.equals(QUIT)) {
+		while (!line.equals(Commands.QUIT)) {
 			try {
 				line = reader.readLine();
 				streamOut.writeUTF(line);

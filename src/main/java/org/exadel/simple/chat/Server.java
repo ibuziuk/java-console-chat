@@ -1,27 +1,23 @@
-package org.exadel.simple.chat.server;
+package org.exadel.simple.chat;
 
-
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server implements Runnable {
-	public static final String QUIT = "quit";
-	private Socket clientSocket;
 	private ServerSocket serverSocket;
-	private DataInputStream inputStream;
+	private ClientThread clientThread;
 	private Thread thread;
 
 	public Server(int port) {
 		try {
 			System.out.println("Starting server, please wait ...");
 			serverSocket = new ServerSocket(port);
-			System.out.println("Server started!" + serverSocket);
+			System.out.println("Server started: " + serverSocket);
 			start();
 		} catch (IOException e) {
-			System.out.println("Failed to start a server ((");
+			e.printStackTrace();
+			System.err.println("Failed to start a server");
 		}
 	}
 
@@ -30,25 +26,21 @@ public class Server implements Runnable {
 		while (thread != null) {
 			System.out.println("Waiting for a client");
 			try {
-				clientSocket = serverSocket.accept();
-				System.out.println("New client accepted: " + clientSocket);
-				inputStream = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
-				boolean done = false;
-				while (!done) {
-					try {
-					String line = inputStream.readUTF();
-					System.out.println(line);
-					done = line.equals(QUIT);
-					} catch (IOException e) {
-						System.out.println("Something went wrong ...");
-						done = true;
-					}
-				}
-				close();
-//				stop();
+				addThread(serverSocket.accept());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+
+	public void addThread(Socket clientSocket) {
+		System.out.println("Client accepted: " + clientSocket);
+		clientThread = new ClientThread(clientSocket);
+		try {
+			clientThread.open();
+			clientThread.start();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -63,19 +55,6 @@ public class Server implements Runnable {
 		if (thread != null) {
 			thread.interrupt();
 			thread = null;
-		}
-	}
-
-	private void close() {
-		try {
-			if (clientSocket != null) {
-				clientSocket.close();
-			}
-			if (inputStream != null) {
-				inputStream.close();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
