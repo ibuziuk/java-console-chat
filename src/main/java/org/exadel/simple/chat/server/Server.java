@@ -12,14 +12,13 @@ public class Server {
 			System.out.println("Starting server, please wait ...");
 			serverSocket = new ServerSocket(port);
 			System.out.println("Server started: " + serverSocket);
-			start();
 		} catch (IOException e) {
 			System.out.println("Something went wrong");
 			e.printStackTrace();
 		}
 	}
 
-	private void start() throws IOException {
+	public void start() throws IOException {
 		while (true) {
 			Socket client = serverSocket.accept();
 			System.out.println("Client accepted: " + client);
@@ -42,6 +41,12 @@ public class Server {
 				System.err.println("Invalid port value: usege - port value must be beetwen '0' and '65535'");
 			} else {
 				Server server = new Server(port);
+				try {
+					server.start();
+				} catch (IOException e) {
+					System.out.println("Something went wrong during startup");
+					e.printStackTrace();
+				}
 			}
 		}
 	}
